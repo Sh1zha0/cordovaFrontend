@@ -1,5 +1,3 @@
-// var HOST = "http://127.0.0.1:8100";
-// var HOST = "http://192.168.0.22:8100";
 var HOST = "http://138.68.135.170";
 
 var URLS = {
@@ -39,14 +37,12 @@ function onDeviceReady() {
 
         $("#goto-currentlocation").on("touchstart", function () {
             getCurrentlocation();
-            // setMapToCurrentLocation();
         });
 
         $("#map-page").enhanceWithin();
 
         makeBasicMap();
         getCurrentlocation();
-        // setMapToCurrentLocation();
     });
 
     $(document).on("pageshow", function (event) {
