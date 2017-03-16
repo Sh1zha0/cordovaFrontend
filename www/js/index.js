@@ -1,4 +1,4 @@
-var HOST = "http://138.68.135.170";
+var HOST = "http://**********"; // ask me for this in class
 
 var URLS = {
     login: "/rest/tokenlogin/",
@@ -57,6 +57,8 @@ function onDeviceReady() {
         console.log("In pageshow / #map-page.");
         map.invalidateSize();
     });
+
+    $('div[data-role="page"]').page();
 
     console.log("TOKEN: " + localStorage.authtoken);
     if (localStorage.authtoken) {
@@ -117,7 +119,7 @@ function getCurrentlocation() {
 
     navigator.geolocation.getCurrentPosition(
         function (pos) {
-            myLatLon = L.latLng(pos.coords.latitude, pos.coords.longitude);
+            // myLatLon = L.latLng(pos.coords.latitude, pos.coords.longitude);
             myPos = new myGeoPosition(pos);
             localStorage.lastKnownCurrentPosition = JSON.stringify(myPos);
 
@@ -150,7 +152,10 @@ function updatePosition() {
         var myPos = JSON.parse(localStorage.lastKnownCurrentPosition);
         $.ajax({
             type: "PATCH",
-            headers: {"Authorization": localStorage.authtoken},
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": localStorage.authtoken
+            },
             url: HOST + URLS["updateposition"],
             data: {
                 lat: myPos.coords.latitude,
