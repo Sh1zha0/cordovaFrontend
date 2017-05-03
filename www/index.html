@@ -7,8 +7,7 @@
 
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'self' data: gap: https://ssl.gstatic.com
-              http://127.0.0.1:8100 http://localhost:8100
-              http://*******************/
+              http://46.101.5.171 
               https://*.tile.openstreetmap.org https://*.tile.osm.org
               http://*.tile.openstreetmap.org http://*.tile.osm.org
               'unsafe-eval';
@@ -21,19 +20,35 @@
     <meta name="viewport"
           content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
 
-    <link rel="stylesheet" type="text/css" href="downloads/jquery-mobile/jquery.mobile-1.4.5.min.css">
-    <link rel="stylesheet" type="text/css" href="downloads/font-awesome-4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="downloads/leaflet-1.0.3/leaflet.css">
+    <link rel="stylesheet" type="text/css" href="downloads/jquery.mobile-1.4.5.min.css">
+    <link rel="stylesheet" type="text/css" href="downloads/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="downloads/leaflet.css">
     <link rel="stylesheet" type="text/css" href="downloads/leaflet.extramarkers/css/leaflet.extra-markers.min.css">
     <link rel="stylesheet" type="text/css" href="css/index.css">
     <link rel="stylesheet" type="text/css" href="css/style1.css">
 
-    <script src="downloads/jquery/jquery-1.12.4.js"></script>
-    <script src="downloads/jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
-    <script src="downloads/leaflet-1.0.3/leaflet.js"></script>
-    <script src="downloads/leaflet.extramarkers/js/leaflet.extra-markers.min.js"></script>
+    <script src="downloads/jquery-1.12.4.js"></script>
+    <script src="downloads/jquery.mobile.min.js"></script>
+    <script src="downloads/leaflet.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
+
+    <!-- <script src="downloads/jquery/jquery-1.12.4.js"></script>
+    <script src="downloads/jquery-mobile/jquery.mobile.min.js"></script>
+    <script src="downloads/leaflet-1.0.3/leaflet.js"></script>
+    <script src="downloads/leaflet.extramarkers/js/leaflet.extra-markers.min.js"></script> -->
+
+ 
+
+    <!-- <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script> -->
 </head>
 
 <body onload="onLoad();">
@@ -70,7 +85,7 @@
                 <td style="text-align: right; vertical-align: middle; width: 15%">
                     <span class="sp-username"></span>&nbsp;
                     <span class="plain-a" id="sp-logout">
-                        <i class='fa fa-sign-out fa-3x'></i></span>
+                        <i class='fa fa-sign-out fa-3x'>Sign out</i></span>
                 </td>
             </tr>
         </table>
@@ -89,7 +104,7 @@
                 <td></td>
             </tr>
         </table>
-        <span id="leaflet-copyright" style="font-size: xx-small"></span>
+        <span id="leaflet-copyright" style="font-size: xx-small">get</span>
     </div>
 </div>
 

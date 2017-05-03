@@ -1,4 +1,4 @@
-var HOST = "http://**********"; // ask me for this in class
+var HOST = "http://46.101.5.171"; // ask me for this in class
 
 var URLS = {
     login: "/rest/tokenlogin/",
@@ -8,17 +8,17 @@ var URLS = {
 
 var map;
 
-var curIcon = L.ExtraMarkers.icon({
-    icon: 'fa-crosshairs',
-    iconColor: 'white',
-    markerColor: 'blue',
-    shape: 'square',
-    prefix: 'fa'
-});
+// var curIcon = L.ExtraMarkers.icon({
+//     icon: 'fa-crosshairs',
+//     iconColor: 'white',
+//     markerColor: 'blue',
+//     shape: 'square',
+//     prefix: 'fa'
+// });
 
 function onLoad() {
     console.log("In onLoad.");
-    document.addEventListener('deviceready', onDeviceReady, false);
+    document.addEventListener('deviceready', onDeviceReady, true);
 }
 
 function onDeviceReady() {
@@ -77,7 +77,7 @@ function loginPressed() {
             username: $("#in-username").val(),
             password: $("#in-password").val()
         }
-    }).done(function (data, status, xhr) {
+    }).success(function (data, status, xhr) {
         localStorage.authtoken = localStorage.authtoken = "Token " + xhr.responseJSON.token;
         localStorage.lastUserName = $("#in-username").val();
         localStorage.lastUserPwd = $("#in-password").val();
@@ -117,31 +117,56 @@ function getCurrentlocation() {
     var myLatLon;
     var myPos;
 
-    navigator.geolocation.getCurrentPosition(
-        function (pos) {
-            // myLatLon = L.latLng(pos.coords.latitude, pos.coords.longitude);
-            myPos = new myGeoPosition(pos);
-            localStorage.lastKnownCurrentPosition = JSON.stringify(myPos);
+    if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
 
-            setMapToCurrentLocation();
-            updatePosition();
-        },
-        function (err) {
-        },
-        {
-            enableHighAccuracy: true
-            // maximumAge: 60000,
-            // timeout: 5000
-        }
-    );
+
+            function showPosition(position) {
+            	console.log('shizhao testing1');
+                myPos = [{
+                    "type": "Point",
+                    "coordinates": [position.coords.latitude, position.coords.longitude]
+                }];
+                console.log(myPos);
+                localStorage.lastKnownCurrentPosition = JSON.stringify(myPos);
+                setMapToCurrentLocation();
+                updatePosition();
+            }
+
+
+    // navigator.geolocation.getCurrentPosition(
+    //     function (pos) {
+    //         // myLatLon = L.latLng(pos.coords.latitude, pos.coords.longitude);
+    //         myPos = new myGeoPosition(pos);
+    //         console.log('check this'+ myPos);
+    //         localStorage.lastKnownCurrentPosition = JSON.stringify(myPos);
+
+    //         setMapToCurrentLocation();
+    //         updatePosition();
+    //     },
+    //     function (err) {
+    //     },
+    //     {
+    //         enableHighAccuracy: true
+    //         // maximumAge: 60000,
+    //         // timeout: 5000
+    //     }
+    // );
 }
 
 function setMapToCurrentLocation() {
     console.log("In setMapToCurrentLocation.");
     if (localStorage.lastKnownCurrentPosition) {
         var myPos = JSON.parse(localStorage.lastKnownCurrentPosition);
-        var myLatLon = L.latLng(myPos.coords.latitude, myPos.coords.longitude);
-        L.marker(myLatLon, {icon: curIcon}).addTo(map);
+        console.log(myPos[0].coordinates[0]);
+        var myLatLon = L.latLng(myPos[0].coordinates[0], myPos[0].coordinates[1]);
+        // L.marker(myLatLon, {icon: curIcon}).addTo(map);
+        L.marker(myLatLon).addTo(map)
+                    .bindPopup('you are here')
+                    .openPopup();
         map.flyTo(myLatLon, 15);
     }
 }
