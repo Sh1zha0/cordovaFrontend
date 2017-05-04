@@ -1,9 +1,10 @@
 var HOST = "http://46.101.5.171"; // ask me for this in class
-
+// var HOST = "http://46.101.5.171";
 var URLS = {
     login: "/rest/tokenlogin/",
     userme: "/rest/userme/",
-    updateposition: "/rest/updateposition/"
+    updateposition: "/rest/updateposition/",
+    findfriend: "/rest/findfriend/"
 };
 
 var map;
@@ -32,11 +33,17 @@ function onDeviceReady() {
         $("#in-password").val(localStorage.lastUserPwd);
     }
 
-    $(document).on("pagecreate", "#map-page", function (event) {
+    $(document).on("pagecreate", "#map-page", function(event) {
         console.log("In pagecreate. Target is " + event.target.id + ".");
 
-        $("#goto-currentlocation").on("touchstart", function () {
+        $("#goto-currentlocation").on("touchstart", function() {
+        	map.remove(map);
+        	makeBasicMap();
             getCurrentlocation();
+        });
+
+        $("#find").on("touchstart", function() {
+            findFriend();
         });
 
         $("#map-page").enhanceWithin();
@@ -45,7 +52,7 @@ function onDeviceReady() {
         getCurrentlocation();
     });
 
-    $(document).on("pageshow", function (event) {
+    $(document).on("pageshow", function(event) {
         console.log("In pageshow. Target is " + event.target.id + ".");
         if (!localStorage.authtoken) {
             $.mobile.navigate("#login-page");
@@ -53,7 +60,7 @@ function onDeviceReady() {
         setUserName();
     });
 
-    $(document).on("pageshow", "#map-page", function () {
+    $(document).on("pageshow", "#map-page", function() {
         console.log("In pageshow / #map-page.");
         map.invalidateSize();
     });
@@ -77,13 +84,13 @@ function loginPressed() {
             username: $("#in-username").val(),
             password: $("#in-password").val()
         }
-    }).success(function (data, status, xhr) {
+    }).success(function(data, status, xhr) {
         localStorage.authtoken = localStorage.authtoken = "Token " + xhr.responseJSON.token;
         localStorage.lastUserName = $("#in-username").val();
         localStorage.lastUserPwd = $("#in-password").val();
 
         $.mobile.navigate("#map-page");
-    }).fail(function (xhr, status, error) {
+    }).fail(function(xhr, status, error) {
         var message = "Login Failed\n";
         if ((!xhr.status) && (!navigator.onLine)) {
             message += "Bad Internet Connection\n";
@@ -112,29 +119,63 @@ function showOkAlert(message) {
     navigator.notification.alert(message, null, "WMAP 2017", "OK");
 }
 
+function findFriend() {
+    console.log('in find');
+    getCurrentlocation();
+    $.ajax({
+        type: "GET",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": localStorage.authtoken
+        },
+        url: HOST + URLS["findfriend"],
+        success: function(data) {
+        	map.remove(map);
+        	makeBasicMap();
+        	getCurrentlocation();
+            displayFriend(data.features);
+        }
+    }).always(function() {
+        $.mobile.navigate("#map-page");
+    });
+
+}
+
+function displayFriend(data) {
+    var pos;
+    console.log(data[1]);
+    for (var i = 0; i < data.length; i++) {
+        pos = L.latLng(data[i].geometry.coordinates[1], data[i].geometry.coordinates[0]);
+        console.log(data[i]);
+        L.marker(pos).addTo(map)
+            .bindPopup(data[i].properties.username)
+            .openPopup();
+    }
+}
+
 function getCurrentlocation() {
     console.log("In getCurrentlocation.");
     var myLatLon;
     var myPos;
 
     if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition);
-            } else {
-                x.innerHTML = "Geolocation is not supported by this browser.";
-            }
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+        x.innerHTML = "Geolocation is not supported by this browser.";
+    }
 
 
-            function showPosition(position) {
-            	console.log('shizhao testing1');
-                myPos = [{
-                    "type": "Point",
-                    "coordinates": [position.coords.latitude, position.coords.longitude]
-                }];
-                console.log(myPos);
-                localStorage.lastKnownCurrentPosition = JSON.stringify(myPos);
-                setMapToCurrentLocation();
-                updatePosition();
-            }
+    function showPosition(position) {
+        console.log('shizhao testing1');
+        myPos = [{
+            "type": "Point",
+            "coordinates": [position.coords.latitude, position.coords.longitude]
+        }];
+        console.log(myPos);
+        localStorage.lastKnownCurrentPosition = JSON.stringify(myPos);
+        setMapToCurrentLocation();
+        updatePosition();
+    }
 
 
     // navigator.geolocation.getCurrentPosition(
@@ -165,8 +206,8 @@ function setMapToCurrentLocation() {
         var myLatLon = L.latLng(myPos[0].coordinates[0], myPos[0].coordinates[1]);
         // L.marker(myLatLon, {icon: curIcon}).addTo(map);
         L.marker(myLatLon).addTo(map)
-                    .bindPopup('you are here')
-                    .openPopup();
+            .bindPopup('you are here')
+            .openPopup();
         map.flyTo(myLatLon, 15);
     }
 }
@@ -183,19 +224,19 @@ function updatePosition() {
             },
             url: HOST + URLS["updateposition"],
             data: {
-                lat: myPos.coords.latitude,
-                lon: myPos.coords.longitude
+                lat: myPos[0].coordinates[0],
+                lon: myPos[0].coordinates[1]
             }
-        }).done(function (data, status, xhr) {
+        }).done(function(data, status, xhr) {
             showOkAlert("Position Updated");
-        }).fail(function (xhr, status, error) {
+        }).fail(function(xhr, status, error) {
             var message = "Position Update Failed\n";
             if ((!xhr.status) && (!navigator.onLine)) {
                 message += "Bad Internet Connection\n";
             }
             message += "Status: " + xhr.status + " " + xhr.responseText;
             showOkAlert(message);
-        }).always(function () {
+        }).always(function() {
             $.mobile.navigate("#map-page");
         });
     }
@@ -226,11 +267,11 @@ function setUserName() {
     console.log("In setUserName.");
     $.ajax({
         type: "GET",
-        headers: {"Authorization": localStorage.authtoken},
+        headers: { "Authorization": localStorage.authtoken },
         url: HOST + URLS["userme"]
-    }).done(function (data, status, xhr) {
+    }).done(function(data, status, xhr) {
         $(".sp-username").html(xhr.responseJSON.properties.username);
-    }).fail(function (xhr, status, error) {
+    }).fail(function(xhr, status, error) {
         $(".sp-username").html("");
     });
 }
